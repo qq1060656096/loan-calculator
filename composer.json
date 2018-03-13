@@ -1,0 +1,31 @@
+{
+  "name": "zwei/loan-calculator",
+  "description": "The loan calculator package.",
+  "license": "MIT",
+  "homepage": "http://gou-8.com",
+  "support": {
+    "issues": "https://github.com/qq1060656096/loan-calculator/issues",
+    "source": "https://github.com/qq1060656096/loan-calculator"
+  },
+  "authors": [
+    {
+      "name": "Zhao Wei Jie",
+      "email": "1060656096@qq.com"
+    }
+  ],
+  "require": {
+    "php": ">=5.4"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^5.4"
+  },
+  "autoload": {
+    "psr-4": {
+      "Zwei\\LoanCalculator\\": "src/",
+      "Zwei\\LoanCalculator\\Tests\\": "tests/"
+    }
+  },
+  "suggest": {
+    "php": "Required to php >=(5.4)."
+  }
+}
