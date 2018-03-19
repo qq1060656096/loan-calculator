@@ -68,6 +68,12 @@ abstract class PaymentCalculatorAbstract extends Base
     protected $months = 0;
 
     /**
+     * 总期数
+     *
+     * @var int
+     */
+    protected $totalPeriod = 0;
+    /**
      * 借款时间
      *
      * @var int
@@ -88,8 +94,23 @@ abstract class PaymentCalculatorAbstract extends Base
         $this->yearInterestRate = $yearInterestRate;
         $this->months = $months;
         $this->time = $time;
+        $this->init();
     }
 
+    /**
+     * 构造方法初始化
+     */
+    public function init()
+    {
+
+    }
+
+    /**
+     * 获取总期数
+     *
+     * @return integer
+     */
+    public abstract function getTotalPeriod();
 
     /**
      * 获取总利息

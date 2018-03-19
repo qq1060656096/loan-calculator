@@ -40,6 +40,24 @@ class EqualTotalPaymentCalculator extends PaymentCalculatorAbstract
 
     /**
      * @inheritdoc
+     */
+    public function init()
+    {
+        // 设置总期数
+        $this->totalPeriod = $this->months;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getTotalPeriod()
+    {
+        $this->totalPeriod = $this->months;
+        return $this->totalPeriod;
+    }
+
+    /**
+     * @inheritdoc
      *
      */
     public function getTotalInterest()
@@ -118,7 +136,7 @@ class EqualTotalPaymentCalculator extends PaymentCalculatorAbstract
         $hasPayInterest = 0;
         // 期数
         $period = 0;
-        for($i = 0; $i < $this->months; $i ++) {
+        for($i = 0; $i < $this->totalPeriod; $i ++) {
             $period ++;
             // 每月还款利息
             $monthlyInterest = $this->calcMonthlyInterest($this->principal, $period, $this->months, $this->yearInterestRate);
