@@ -84,8 +84,7 @@ class EqualPrincipalPaymentCalculator extends PaymentCalculatorAbstract
      */
     public function calcMonthlyPrincipal()
     {
-        $monthlyPrincipal = $this->principal / $this->months;
-        $monthlyPrincipal = Helper::formatMoney($monthlyPrincipal);
+        $monthlyPrincipal = bcsub($this->principal, $this->months, $this->decimalDigits);
         return $monthlyPrincipal;
     }
 

@@ -52,7 +52,6 @@ class EqualTotalPaymentCalculator extends PaymentCalculatorAbstract
      */
     public function getTotalPeriod()
     {
-        $this->totalPeriod = $this->months;
         return $this->totalPeriod;
     }
 
@@ -63,7 +62,6 @@ class EqualTotalPaymentCalculator extends PaymentCalculatorAbstract
     public function getTotalInterest()
     {
         $interest = $this->calcMonthlyPaymentMoney($this->principal, $this->months, $this->yearInterestRate) * $this->months - $this->principal;
-        $interest = Helper::formatMoney($interest);
         return $interest;
     }
 
@@ -77,10 +75,13 @@ class EqualTotalPaymentCalculator extends PaymentCalculatorAbstract
      */
     public function calcMonthlyInterest($principal, $period, $months, $yearInterestRate)
     {
-        $monthInterestRate = $yearInterestRate / 12;
-        // 本期还款利息
-        $interest = ($principal * $monthInterestRate * pow(1 + $monthInterestRate, $period - 1)) / pow(1 + $monthInterestRate, $months - 1);
-        $interest = Helper::formatMoney($interest);
+        // 每月应还利息 = 贷款本金×月利率×〔(1+月利率)^还款月数-(1+月利率)^(还款月序号-1)〕÷〔(1+月利率)^还款月数-1〕
+        $monthInterestRate = bcdiv($yearInterestRate, 12, 5);
+        $result = bcmul($principal, $monthInterestRate, $this->decimalDigits);
+        $result2 = bcpow(1 + $monthInterestRate, $period -1, $this->decimalDigits);
+        $result = bcmul($result, $result2, $this->decimalDigits);
+        $result3 = bcpow(1 + $monthInterestRate, $months - 1, $this->decimalDigits);
+        $interest = bcdiv($result, $result3, $this->decimalDigits);
         return $interest;
     }
 
@@ -95,10 +96,14 @@ class EqualTotalPaymentCalculator extends PaymentCalculatorAbstract
      */
     public function calcMonthlyPrincipal($principal, $period, $months, $yearInterestRate)
     {
-        $monthInterestRate = $yearInterestRate / 12;
+        $monthInterestRate = bcdiv($yearInterestRate, 12, 5);
         // 本期还款本金  每月应还本金 = 贷款本金×月利率×(1+月利率)^(还款月序号-1)÷〔(1+月利率)^还款月数-1〕
-        $monthlyPrincipal = ($principal * $monthInterestRate * pow(1 + $monthInterestRate, $period - 1)) / (pow(1 + $monthInterestRate, $months) -1);
-        $monthlyPrincipal = Helper::formatMoney($monthlyPrincipal);
+        $result = bcmul($principal, $monthInterestRate, $this->decimalDigits);
+        $result2 = bcpow(1 + $monthInterestRate, $period -1, $this->decimalDigits);
+        $result = bcmul($result, $result2, $this->decimalDigits);
+        $result3 = bcpow(1 + $monthInterestRate, $months - 1, $this->decimalDigits);
+        $result3 = bcsub($result3, 1);
+        $monthlyPrincipal = bcdiv($result, $result3, $this->decimalDigits);
         return $monthlyPrincipal;
     }
 
