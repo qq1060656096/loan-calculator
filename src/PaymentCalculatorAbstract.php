@@ -9,7 +9,8 @@ namespace Zwei\LoanCalculator;
  */
 abstract class PaymentCalculatorAbstract extends Base
 {
-
+    const SCALE = 3;
+    const DECIMAL_DIGITS = 0;
     /**
      * 还款计划列表 本期还款期数键名
      * @var string
@@ -81,19 +82,28 @@ abstract class PaymentCalculatorAbstract extends Base
     protected $time = 0;
 
     /**
+     * 保留几位小数
+     *
+     * @var int
+     */
+    protected $decimalDigits = 0;
+
+    /**
      * 构造方法
      * PaymentCalc constructor.
      * @param float $principal 本金
      * @param float $yearInterestRate 年利率
      * @param int $months 月数
      * @param int $time 借款时间
+     * @param int $decimalDigits 保留几位小数(默认2)
      */
-    public function __construct($principal, $yearInterestRate, $months, $time)
+    public function __construct($principal, $yearInterestRate, $months, $time, $decimalDigits = 2)
     {
         $this->principal = $principal;
         $this->yearInterestRate = $yearInterestRate;
         $this->months = $months;
         $this->time = $time;
+        $this->decimalDigits = $decimalDigits;
         $this->init();
     }
 

@@ -3,6 +3,9 @@
 > doctrine2 数据操作
 > 读取配置
 
+## 安装前准备
+> 1. php5.4以上版本
+> 2. bcmath扩展 http://php.net/manual/zh/book.bc.php
 
 ## 1 安装(Install)
 > 1. 通过Composer安装
@@ -11,7 +14,7 @@
 ```json
 {
   "require": {
-    "zwei/base": "dev-develop"
+    "zwei/loan-calculator": "dev-develop"
   }
 }
 ```
@@ -38,4 +41,3 @@ D:\phpStudy\php\php-7.1.13-nts\php.exe D:\phpStudy\php\php-5.6.27-nts\composer.p
 
 D:\phpStudy\php\php-7.1.13-nts\php.exe vendor\phpunit\phpunit\phpunit --bootstrap tests/TestInit.php tests/
 
-D:\phpStudy\php\php-7.1.13-nts\php.exe index.php

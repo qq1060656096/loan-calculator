@@ -53,8 +53,11 @@ class EqualPrincipalPaymentCalculator extends PaymentCalculatorAbstract
      */
     public function getTotalInterest()
     {
-        $interest = ($this->months + 1) * $this->principal * $this->yearInterestRate / 12 / 2;
-        $interest = Helper::formatMoney($interest);
+        // 还款总利息 =（还款月数+1）*贷款额*月利率/2
+        $result = bcmul($this->months + 1, $this->principal, $this->decimalDigits);
+        $result = bcmul($result, $this->yearInterestRate, $this->decimalDigits);
+        $result = bcdiv($result, 12, $this->decimalDigits);
+        $interest = bcdiv($result, 2, $this->decimalDigits);
         return $interest;
     }
 
@@ -67,8 +70,10 @@ class EqualPrincipalPaymentCalculator extends PaymentCalculatorAbstract
      */
     public function calcMonthlyInterest($principal, $hasPayPrincipal, $yearInterestRate)
     {
-        $interest = ($principal - $hasPayPrincipal) * $yearInterestRate / 12;
-        $interest = Helper::formatMoney($interest);
+        // 每月利息 =(本金-累计已还本金)×月利率
+        $result = bcsub($principal, $hasPayPrincipal, $this->decimalDigits);
+        $result = bcmul($result, $yearInterestRate, $this->decimalDigits);
+        $interest = bcdiv($result, 12, $this->decimalDigits);
         return $interest;
     }
 
@@ -90,39 +95,32 @@ class EqualPrincipalPaymentCalculator extends PaymentCalculatorAbstract
     public function getPlanLists()
     {
         $paymentPlanLists = [];
-        // 每月还款本金
-        $monthlyPaymentPrincipal = $this->calcMonthlyPrincipal();
-        // 总还款利息
-        $totalInterest = $this->getTotalInterest();
+        $monthlyPaymentPrincipal = $this->calcMonthlyPrincipal();// 每月还款本金
+        $totalInterest      = $this->getTotalInterest();// 总还款利息
+        $hasPayPrincipal    = 0;// 已还本金
+        $hasPayInterest     = 0;// 已还利息
+        $period             = 0;// 期数
 
-        // 已还本金
-        $hasPayPrincipal = 0;
-        // 已还利息
-        $hasPayInterest = 0;
-        // 期数
-        $period = 0;
         for($i = 0; $i < $this->totalPeriod; $i ++) {
             $period ++;
             // 每月还款利息
             $monthlyInterest = $this->calcMonthlyInterest($this->principal, $hasPayPrincipal, $this->yearInterestRate);
             // 从新计算最后一期,还款本金和利息
             if ($period == $this->months) {
-                $monthlyPaymentPrincipal = $this->principal - $hasPayPrincipal;
-                $monthlyInterest = $totalInterest - $hasPayInterest;
+                $monthlyPaymentPrincipal = bcsub($this->principal, $hasPayPrincipal, $this->decimalDigits);
+                $monthlyInterest = bcsub($totalInterest, $hasPayInterest, $this->decimalDigits);
             }
-            $hasPayInterest += $monthlyInterest;
-            $hasPayPrincipal += $monthlyPaymentPrincipal;
-            // 剩余还款本金
-            $rowRemainPrincipal = $this->principal - $hasPayPrincipal;
-            $rowRemainPrincipal = Helper::formatMoney($rowRemainPrincipal);
-            // 剩余还款利息
-            $rowRemainInterest = $totalInterest - $hasPayInterest;
-            $rowRemainInterest = Helper::formatMoney($rowRemainInterest);
+            $hasPayInterest     = bcadd($hasPayInterest, $monthlyInterest, $this->decimalDigits);// 已支付利息
+            $hasPayPrincipal    = bcadd($hasPayPrincipal, $monthlyPaymentPrincipal, $this->decimalDigits);// 已还本金
+            $rowRemainPrincipal = bcsub($this->principal, $hasPayPrincipal, $this->decimalDigits);// 剩余还款本金
+            $rowRemainInterest  = bcsub($totalInterest, $hasPayInterest, $this->decimalDigits);// 剩余还款利息
+            $rowTotalMoney      = bcadd($monthlyPaymentPrincipal, $monthlyInterest, $this->decimalDigits);// 本期还款总额
+
             $rowPlan = [
                 self::PLAN_LISTS_KEY_PERIOD => $period,// 本期还款第几期
                 self::PLAN_LISTS_KEY_PRINCIPAL => $monthlyPaymentPrincipal,// 本期还款本金
                 self::PLAN_LISTS_KEY_INTEREST => $monthlyInterest,// 本期还款利息
-                self::PLAN_LISTS_KEY_TOTAL_MONEY => $monthlyPaymentPrincipal + $monthlyInterest,// 本期还款总额
+                self::PLAN_LISTS_KEY_TOTAL_MONEY => $rowTotalMoney,// 本期还款总额
                 self::PLAN_LISTS_KEY_TIME => strtotime("+ {$period} month", $this->time),// 本期还款时间
                 self::PLAN_LISTS_KEY_REMAIN_PRINCIPAL => $rowRemainPrincipal,// 剩余还款本金
                 self::PLAN_LISTS_KEY_REMAIN_INTEREST => $rowRemainInterest,// 剩余还款利息
