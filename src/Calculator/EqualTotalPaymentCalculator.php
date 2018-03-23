@@ -161,7 +161,7 @@ class EqualTotalPaymentCalculator extends PaymentCalculatorAbstract
             // 从新计算最后一期,还款本金和利息
             if ($period == $this->months) {
                 $monthlyPrincipal = bcsub($this->principal, $hasPayPrincipal, $this->decimalDigits);
-                $monthlyInterest = bcsub($monthlyPaymentMoney, $monthlyPrincipal, $this->decimalDigits);
+                $monthlyInterest = bcsub($totalInterest, $hasPayInterest, $this->decimalDigits);
             }
             // 利息小于0，设置未0
             $monthlyInterest < 0 ? $monthlyInterest = "0.00" : null;
