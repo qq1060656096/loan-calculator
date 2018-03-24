@@ -1,5 +1,5 @@
 <?php
-namespace Zwei\LoanCalc\Tests;
+namespace Zwei\LoanCalculator\Tests;
 
 $phpUnitBootstrapAutoload = DIRECTORY_SEPARATOR.'vendor'.DIRECTORY_SEPARATOR.'autoload.php';
 $phpUnitBootstrapFile1 = dirname(__DIR__ ) .$phpUnitBootstrapAutoload;

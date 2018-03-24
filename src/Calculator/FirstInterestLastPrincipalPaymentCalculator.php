@@ -26,6 +26,23 @@ class FirstInterestLastPrincipalPaymentCalculator extends PaymentCalculatorAbstr
 
     /**
      * @inheritdoc
+     */
+    public function init()
+    {
+        // 设置总期数
+        $this->totalPeriod = 1;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getTotalPeriod()
+    {
+        return $this->totalPeriod;
+    }
+
+    /**
+     * @inheritdoc
      *
      */
     public function getTotalInterest()
@@ -74,7 +91,7 @@ class FirstInterestLastPrincipalPaymentCalculator extends PaymentCalculatorAbstr
         $hasPayInterest = 0;
         // 期数
         $period = 0;
-        for($i = 0; $i < $this->months; $i ++) {
+        for($i = 0; $i < $this->totalPeriod; $i ++) {
             $period ++;
             // 每月还款利息
             $monthlyInterest = $this->calcMonthlyInterest($period);

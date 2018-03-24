@@ -1,33 +1,43 @@
-# base包
+# zwei/loan-calculator 包
 
-> doctrine2 数据操作
-> 读取配置
+> 贷款计算器, 生成还款计划
 
 
-## 1 安装(Install)
-> 1. 通过Composer安装
-> 2. 创建composer.json文件,并写入以下内容:
+## 安装前准备
+> 1. php5.4以上版本
+> 2. bcmath扩展 http://php.net/manual/zh/book.bc.php
+> 3. 创建composer.json文件,并写入以下内容:
 
 ```json
 {
   "require": {
-    "zwei/base": "dev-develop"
+    "zwei/loan-calculator": "dev-master"
   }
 }
 ```
-> 3. 执行composer install
+> 4. 执行composer install
 
-
+计算器
 ## 使用示例(use)
 > 1. 例如项目目录在"E:\web\php7\test"
 > 2. 创建index.php,并加入以下内容
 
 ```php
 <?php
-// 读取配置
-\Zwei\Base\Config::get("配置键名");
-// 返回\Doctrine\DBAL\Connection类,请查看doctrine 官网文档
-$dbConnection = DB::getInstance()->getConnection();
+use Zwei\LoanCalculator\Calculator\EqualTotalPaymentCalculator;
+use Zwei\LoanCalculator\Calculator\EqualPrincipalPaymentCalculator;
+
+$principal          = 50000;// 本金
+$yearInterestRate   = "0.10";// 年利率10%
+$months             = 12;// 借款12个月
+$time               = strtotime("2018-03-20 10:05");// 借款时间
+$decimalDigits      = 2;// 保留小数点后3位,默认保留2位
+// 等额本金计算器
+$obj                = new EqualPrincipalPaymentCalculator($principal, $yearInterestRate, $months, $time, $decimalDigits);
+$planLists          = $obj->getPlanLists();// 获取还款计划
+// 等额本息计算器
+$obj                = new EqualTotalPaymentCalculator($principal, $yearInterestRate, $months, $time, $decimalDigits);
+$planLists          = $obj->getPlanLists();// 获取还款计划
 ```
 
 ### 单元测试使用
@@ -38,4 +48,3 @@ D:\phpStudy\php\php-7.1.13-nts\php.exe D:\phpStudy\php\php-5.6.27-nts\composer.p
 
 D:\phpStudy\php\php-7.1.13-nts\php.exe vendor\phpunit\phpunit\phpunit --bootstrap tests/TestInit.php tests/
 
-D:\phpStudy\php\php-7.1.13-nts\php.exe index.php
