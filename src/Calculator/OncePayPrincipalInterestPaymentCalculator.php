@@ -44,8 +44,11 @@ class OncePayPrincipalInterestPaymentCalculator extends PaymentCalculatorAbstrac
      */
     public function getTotalInterest()
     {
-        $interest = $this->principal * $this->yearInterestRate / 12 * $this->months;
-        $interest = Helper::formatMoney($interest);
+        $decimalDigitsNew = $this->decimalDigits + 5;
+        $monthInterestRate = bcdiv($this->yearInterestRate, 12, $decimalDigitsNew);
+        // 总利息 = 贷款额度×月利率×贷款期限=100000×1%×10=10000（元）
+        $result = bcmul($this->principal, $monthInterestRate, $decimalDigitsNew);
+        $interest = bcmul($result, $this->months, $this->decimalDigits);
         return $interest;
     }
 
@@ -56,8 +59,8 @@ class OncePayPrincipalInterestPaymentCalculator extends PaymentCalculatorAbstrac
      */
     public function calcMonthlyInterest($period)
     {
-        $interest = $period == $this->months ? $this->getTotalInterest() : 0;;
-        $interest = Helper::formatMoney($interest);
+        $interest = $period == 1 ? $this->getTotalInterest() : 0;
+        $interest = bcadd($interest, 0, $this->decimalDigits);
         return $interest;
     }
 
@@ -68,8 +71,8 @@ class OncePayPrincipalInterestPaymentCalculator extends PaymentCalculatorAbstrac
      */
     public function calcMonthlyPrincipal($period)
     {
-        $monthlyPrincipal = $period == $this->months ? $this->principal : 0;
-        $monthlyPrincipal = Helper::formatMoney($monthlyPrincipal);
+        $monthlyPrincipal = $period == 1 ? $this->principal : 0;
+        $monthlyPrincipal = bcadd($monthlyPrincipal, 0, $this->decimalDigits);
         return $monthlyPrincipal;
     }
 
@@ -95,19 +98,18 @@ class OncePayPrincipalInterestPaymentCalculator extends PaymentCalculatorAbstrac
             // 每月还款本金
             $monthlyPaymentPrincipal = $this->calcMonthlyPrincipal($period);
 
-            $hasPayInterest += $monthlyInterest;
-            $hasPayPrincipal += $monthlyPaymentPrincipal;
+            $hasPayInterest     = bcadd($hasPayInterest, $monthlyInterest, $this->decimalDigits);
+            $hasPayPrincipal    = bcadd($hasPayPrincipal, $monthlyPaymentPrincipal, $this->decimalDigits);
             // 剩余还款本金
-            $rowRemainPrincipal = $this->principal - $hasPayPrincipal;
-            $rowRemainPrincipal = Helper::formatMoney($rowRemainPrincipal);
+            $rowRemainPrincipal = bcsub($this->principal, $hasPayPrincipal, $this->decimalDigits);
             // 剩余还款利息
-            $rowRemainInterest = $totalInterest - $hasPayInterest;
-            $rowRemainInterest = Helper::formatMoney($rowRemainInterest);
+            $rowRemainInterest  = bcsub($totalInterest, $hasPayInterest, $this->decimalDigits);
+            $rowTotalMoney      = bcadd($monthlyPaymentPrincipal, $monthlyInterest, $this->decimalDigits);
             $rowPlan = [
                 self::PLAN_LISTS_KEY_PERIOD => $period,// 本期还款第几期
                 self::PLAN_LISTS_KEY_PRINCIPAL => $monthlyPaymentPrincipal,// 本期还款本金
                 self::PLAN_LISTS_KEY_INTEREST => $monthlyInterest,// 本期还款利息
-                self::PLAN_LISTS_KEY_TOTAL_MONEY => $monthlyPaymentPrincipal + $monthlyInterest,// 本期还款总额
+                self::PLAN_LISTS_KEY_TOTAL_MONEY => $rowTotalMoney,// 本期还款总额
                 self::PLAN_LISTS_KEY_TIME => strtotime("+ {$period} month", $this->time),// 本期还款时间
                 self::PLAN_LISTS_KEY_REMAIN_PRINCIPAL => $rowRemainPrincipal,// 剩余还款本金
                 self::PLAN_LISTS_KEY_REMAIN_INTEREST => $rowRemainInterest,// 剩余还款利息
