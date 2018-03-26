@@ -38,7 +38,7 @@ class EqualPrincipalPaymentCalculatorTest extends LoanCalculatorTestCase
         $decimalDigits      = 2;// 保留小数点后3位,默认保留2位
         $obj                = new EqualPrincipalPaymentCalculator($principal, $yearInterestRate, $months, $time, $decimalDigits);
         $planLists = $obj->getPlanLists();
-        print_r($planLists);
+//        print_r($planLists);
         // 第1期的利息 +  第一期剩余还款利息
         $this->assertEquals("2708.32", bcadd($planLists[1]['interest'], $planLists[1]['remain_interest'], $decimalDigits));
         $this->assertEquals("2708.32", $obj->getTotalInterest());
