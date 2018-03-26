@@ -1,16 +1,16 @@
 <?php
 namespace Zwei\LoanCalculator\Tests\Calculator;
 
-use Zwei\LoanCalculator\Calculator\EqualTotalPaymentCalculator;
+use Zwei\LoanCalculator\Calculator\OncePayPrincipalInterestPaymentCalculator;
 use Zwei\LoanCalculator\Tests\LoanCalculatorTestCase;
 
 /**
- * 等额本息还款方式计算器单元测试
+ * 一次性还本付息还款方式计算器单元测试
  *
- * Class EqualTotalPaymentCalculatorTest
+ * Class OncePayPrincipalInterestPaymentCalculatorTest
  * @package Zwei\LoanCalculator\Tests\Calculator
  */
-class EqualTotalPaymentCalculatorTest extends LoanCalculatorTestCase
+class OncePayPrincipalInterestPaymentCalculatorTest extends LoanCalculatorTestCase
 {
     /**
      * 测试总收益
@@ -22,9 +22,8 @@ class EqualTotalPaymentCalculatorTest extends LoanCalculatorTestCase
         $months             = 12;// 借款12个月
         $time               = strtotime("2018-03-20 10:05");// 借款时间
         $decimalDigits      = 2;// 保留小数点后3位,默认保留2位
-        $obj                = new EqualTotalPaymentCalculator($principal, $yearInterestRate, $months, $time, $decimalDigits);
-//        print_r($obj->getTotalInterest());
-        $this->assertEquals("549.90", $obj->getTotalInterest());
+        $obj                = new OncePayPrincipalInterestPaymentCalculator($principal, $yearInterestRate, $months, $time, $decimalDigits);
+        $this->assertEquals("999.99", $obj->getTotalInterest());
     }
 
     /**
@@ -37,16 +36,14 @@ class EqualTotalPaymentCalculatorTest extends LoanCalculatorTestCase
         $months             = 12;// 借款12个月
         $time               = strtotime("2018-03-20 10:05");// 借款时间
         $decimalDigits      = 2;// 保留小数点后3位,默认保留2位
-        $obj                = new EqualTotalPaymentCalculator($principal, $yearInterestRate, $months, $time, $decimalDigits);
+        $obj                = new OncePayPrincipalInterestPaymentCalculator($principal, $yearInterestRate, $months, $time, $decimalDigits);
         $planLists = $obj->getPlanLists();
 //        print_r($planLists);
         // 第1期的利息 +  第一期剩余还款利息
-        $this->assertEquals("549.90", bcadd($planLists[1]['interest'], $planLists[1]['remain_interest'], $decimalDigits));
+        $this->assertEquals("999.99", bcadd($planLists[1]['interest'], $planLists[1]['remain_interest'], $decimalDigits));
 //        $this->assertEquals("2708.33", $obj->getTotalInterest());
-        $this->assertEquals("795.82", $planLists[1]['principal']);
-        $this->assertEquals("83.33", $planLists[1]['interest']);
-        $this->assertEquals("879.15", $planLists[1]['total_money']);
-        $this->assertEquals("0.00", $planLists[12]['remain_principal']);
-        $this->assertEquals("0.00", $planLists[12]['remain_interest']);
+        $this->assertEquals("10000.00", $planLists[1]['principal']);
+        $this->assertEquals("999.99", $planLists[1]['interest']);
+        $this->assertEquals("10999.99", $planLists[1]['total_money']);
     }
 }

@@ -28,6 +28,8 @@ include_once 'vendor/autoload.php';
 
 use Zwei\LoanCalculator\Calculator\EqualTotalPaymentCalculator;
 use Zwei\LoanCalculator\Calculator\EqualPrincipalPaymentCalculator;
+use Zwei\LoanCalculator\Calculator\MonthlyInterestPaymentCalculator;
+use Zwei\LoanCalculator\Calculator\OncePayPrincipalInterestPaymentCalculator;
 
 $principal          = 50000;// 本金
 $yearInterestRate   = "0.10";// 年利率10%
@@ -39,6 +41,12 @@ $obj                = new EqualPrincipalPaymentCalculator($principal, $yearInter
 $planLists          = $obj->getPlanLists();// 获取还款计划
 // 等额本息计算器
 $obj                = new EqualTotalPaymentCalculator($principal, $yearInterestRate, $months, $time, $decimalDigits);
+$planLists          = $obj->getPlanLists();// 获取还款计划
+// 每月还息到期还本还款方式计算器
+$obj                = new MonthlyInterestPaymentCalculator($principal, $yearInterestRate, $months, $time, $decimalDigits);
+$planLists          = $obj->getPlanLists();// 获取还款计划
+// 一次性还本付息还款方式计算器
+$obj                = new OncePayPrincipalInterestPaymentCalculator($principal, $yearInterestRate, $months, $time, $decimalDigits);
 $planLists          = $obj->getPlanLists();// 获取还款计划
 ```
 
