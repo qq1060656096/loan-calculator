@@ -53,10 +53,11 @@ class EqualPrincipalPaymentCalculator extends PaymentCalculatorAbstract
      */
     public function getTotalInterest()
     {
+        $decimalDigitsNew = $this->decimalDigits + 5;
+        $monthInterestRate = bcdiv($this->yearInterestRate, 12, $decimalDigitsNew);
         // 还款总利息 =（还款月数+1）*贷款额*月利率/2
-        $result = bcmul($this->months + 1, $this->principal, $this->decimalDigits);
-        $result = bcmul($result, $this->yearInterestRate, $this->decimalDigits);
-        $result = bcdiv($result, 12, $this->decimalDigits);
+        $result = bcmul($this->months + 1, $this->principal, $decimalDigitsNew);
+        $result = bcmul($result, $monthInterestRate, $decimalDigitsNew);
         $interest = bcdiv($result, 2, $this->decimalDigits);
         return $interest;
     }
@@ -70,10 +71,11 @@ class EqualPrincipalPaymentCalculator extends PaymentCalculatorAbstract
      */
     public function calcMonthlyInterest($principal, $hasPayPrincipal, $yearInterestRate)
     {
+        $decimalDigitsNew = $this->decimalDigits + 5;
+        $monthInterestRate = bcdiv($yearInterestRate, 12, $decimalDigitsNew);
         // 每月利息 =(本金-累计已还本金)×月利率
-        $result = bcsub($principal, $hasPayPrincipal, $this->decimalDigits);
-        $result = bcmul($result, $yearInterestRate, $this->decimalDigits);
-        $interest = bcdiv($result, 12, $this->decimalDigits);
+        $result = bcsub($principal, $hasPayPrincipal, $decimalDigitsNew);
+        $interest = bcmul($result, $monthInterestRate, $this->decimalDigits);
         return $interest;
     }
 
@@ -84,7 +86,8 @@ class EqualPrincipalPaymentCalculator extends PaymentCalculatorAbstract
      */
     public function calcMonthlyPrincipal()
     {
-        $monthlyPrincipal = bcsub($this->principal, $this->months, $this->decimalDigits);
+        // 每月本金=总本金/还款月数
+        $monthlyPrincipal = bcdiv($this->principal, $this->months, $this->decimalDigits);
         return $monthlyPrincipal;
     }
 

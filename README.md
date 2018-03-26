@@ -24,6 +24,8 @@
 
 ```php
 <?php
+include_once 'vendor/autoload.php';
+
 use Zwei\LoanCalculator\Calculator\EqualTotalPaymentCalculator;
 use Zwei\LoanCalculator\Calculator\EqualPrincipalPaymentCalculator;
 
