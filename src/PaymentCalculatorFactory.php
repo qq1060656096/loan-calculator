@@ -46,7 +46,7 @@ class PaymentCalculatorFactory
      * @return PaymentCalculatorAbstract
      * @throws ParamsException
      */
-    public static function getPaymentCalculatorObj($type, $principal, $yearInterestRate, $months, $time, $decimalDigits)
+    public static function getPaymentCalculatorObj($type, $principal, $yearInterestRate, $months, $time, $decimalDigits = 2)
     {
         switch ($type) {
             case self::TYPE_EQUAL_PRINCIPAL:

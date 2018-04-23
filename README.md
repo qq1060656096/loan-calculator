@@ -42,14 +42,17 @@ $decimalDigits      = 2;// 保留小数点后3位,默认保留2位
 $obj = PaymentCalculatorFactory::getPaymentCalculatorObj(PaymentCalculatorFactory::TYPE_EQUAL_PRINCIPAL, $principal, $yearInterestRate, $month, 0);
 $lists = $obj->getPlanLists();
 print_r($lists);
+
 // 等额本息计算器
 $obj = PaymentCalculatorFactory::getPaymentCalculatorObj(PaymentCalculatorFactory::TYPE_EQUAL_TOTAL_PAYMENT, $principal, $yearInterestRate, $month, 0);
 $lists = $obj->getPlanLists();
 print_r($lists);
+
 // 每月还息到期还本还款方式计算器
 $obj = PaymentCalculatorFactory::getPaymentCalculatorObj(PaymentCalculatorFactory::TYPE_MONTHLY_INTEREST, $principal, $yearInterestRate, $month, 0);
 $lists = $obj->getPlanLists();
 print_r($lists);
+
 // 一次性还本付息还款方式计算器
 $obj = PaymentCalculatorFactory::getPaymentCalculatorObj(PaymentCalculatorFactory::TYPE_ONCE_PAY_PRINCIPAL_INTEREST, $principal, $yearInterestRate, $month, 0);
 $lists = $obj->getPlanLists();
